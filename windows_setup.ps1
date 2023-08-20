@@ -349,7 +349,7 @@ function Set-Neovim {
     Write-Start -Message "Starting clone Neovim config ..."
     git clone --depth 1 https://github.com/AstroNvim/AstroNvim $env:LOCALAPPDATA\nvim
     git clone https://github.com/manhtrancoder/user $env:LOCALAPPDATA\nvim\lua\user
-    Write-Start -Message "Cloned Neovim config!"
+    Write-Done -Message "Cloned Neovim config!"
 }
 function Set-Global-Node-Modules {
     npm install -g neovim
