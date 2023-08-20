@@ -3,6 +3,9 @@
 # Or:
 # Set-ExecutionPolicy -ExecutionPolicy ByPass -Scope CurrentUser -Force
 
+Write-Warning -Message "Please check winget carefully before installing!"
+pause
+
 <# ================== BEGIN OF DECLARE ================ #>
 <# ========== DECLARE ALL NECESSARY DATA HERE ========= #>
 $ICONS = @{
@@ -29,26 +32,6 @@ $LOG_PATH = "$OUTPUT_PATH\log"
 $TEMP_PATH = "$OUTPUT_PATH\temp"
 $IS_RUNNING_AS_ADMIN = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
-function Enable-UAC {
-    $UAC_PATH = "REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System"
-    $NAME_UAC = "ConsentPromptBehaviorAdmin"
-    $DEFAULT_UAC_VALUE = 5
-
-    Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning on UAC"
-    $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DEFAULT_UAC_VALUE"
-    Invoke-Command-As-Admin -NameProcess "Enable UAC" -Command $Command
-    Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turned on UAC"
-}
-function Disable-UAC {
-    $UAC_PATH = "REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System"
-    $NAME_UAC = "ConsentPromptBehaviorAdmin"
-    $DISABLE_UAC_VALUE = 0
-
-    Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning off UAC"
-    $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DISABLE_UAC_VALUE"
-    Invoke-Command-As-Admin -NameProcess "Disable UAC" -Command $Command
-    Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"off`"]) Turned off UAC"
-}
 function Write-Separate-Line {
     Write-Host -ForegroundColor Magenta $SEPARATE_LINE
 }
@@ -59,7 +42,7 @@ function Write-Start {
     )
 
     Write-Separate-Line
-    Write-Host -ForegroundColor Green "$($ICONS[`"start`"]) $Message"
+    Write-Host -ForegroundColor Blue "$($ICONS[`"start`"]) $Message"
 }
 function Write-Done {
     [CmdletBinding()]
@@ -68,7 +51,7 @@ function Write-Done {
         [switch]$NoSeparateLine
     )
 
-    Write-Host -ForegroundColor Blue "$($ICONS[`"done`"]) $Message"
+    Write-Host -ForegroundColor Green "$($ICONS[`"done`"]) $Message"
     if (!$NoSeparateLine) {
         Write-Separate-Line
     }
@@ -185,12 +168,123 @@ function Invoke-Command-As-Admin {
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
 }
+
 function Update-Path {
     Write-Start "$($ICONS[`"update`"]) Refreshing path variable."
     $system_path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
     $user_path = [System.Environment]::GetEnvironmentVariable("Path","User") 
     $env:Path = "$system_path;$user_path"
     Write-Done "$($ICONS[`"update`"]) Path variable refreshed."
+}
+
+function Enable-UAC {
+    $UAC_PATH = "REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+    $NAME_UAC = "ConsentPromptBehaviorAdmin"
+    $DEFAULT_UAC_VALUE = 5
+
+    Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning on UAC"
+    $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DEFAULT_UAC_VALUE"
+    Invoke-Command-As-Admin -NameProcess "Enable UAC" -Command $Command
+    Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turned on UAC"
+}
+function Disable-UAC {
+    $UAC_PATH = "REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+    $NAME_UAC = "ConsentPromptBehaviorAdmin"
+    $DISABLE_UAC_VALUE = 0
+
+    Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning off UAC"
+    $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DISABLE_UAC_VALUE"
+    Invoke-Command-As-Admin -NameProcess "Disable UAC" -Command $Command
+    Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"off`"]) Turned off UAC"
+}
+
+function Set-Winget {
+    Write-Separate-Line
+
+    Install-Winget-Packages
+    Update-Winget-Packages
+
+    Write-Separate-Line
+}
+function Install-Winget-Packages {
+    $ID_LIST = @(
+        "IObit.AdvancedSystemCare"
+        "IObit.Uninstaller"
+        "GitHub.GitHubDesktop"
+        "Git.Git"
+        "JRSoftware.InnoSetup"
+        "Tonec.InternetDownloadManager"
+        "Microsoft.PowerToys"
+        "Microsoft.WindowsTerminal"
+        "JanDeDobbeleer.OhMyPosh"
+        "JetBrains.Toolbox"
+        "RARLab.WinRAR"
+        "chrisant996.Clink"
+        "iTop.iTopScreenRecorder"
+        "qBittorrent.qBittorrent"
+        "sharkdp.fd"
+        "gerardog.gsudo"
+        "Starship.Starship"
+        "Clement.bottom"
+        "CodeSector.TeraCopy"
+        "Microsoft.PowerShell"
+        "GitHub.cli"
+        "Microsoft.VisualStudioCode"
+        "Oracle.JavaRuntimeEnvironment"
+        "Oracle.JDK.20"
+        "MSYS2.MSYS2"
+        "Kitware.CMake"
+        "OpenJS.NodeJS.LTS"
+        "Neovim.Neovim"
+    )
+
+    foreach ($id in $id_list) {
+        Update-Path
+        winget install --id $id -s winget -e --accept-package-agreements --force
+    }
+}
+function Update-Winget-Packages {
+    winget upgrade --all
+}
+
+function Set-Chocolaty {
+    Write-Separate-Line
+
+    Install-Chocolaty
+    Update-Path # Update path for choco command
+    Install-Chocolaty-Packages
+    Update-Chocolaty
+
+    Write-Separate-Line
+}
+function Install-Chocolaty {
+    Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty ..."
+    Invoke-Command-As-Admin -Name "Installing Chocolaty" - Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    Write-Done -Message "$($ICONS[`"install`"]) Chocolaty installed."
+}
+function Install-Chocolaty-Packages {
+    Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty package ..."
+
+    if (Get-Command choco -ErrorAction Ignore) {
+        Invoke-Command-As-Admin -NameProcess "Chocolaty package" -Command "choco install bat fzf gdu less ripgrep sigcheck winfetch unzip -y"
+    }
+    else {
+        Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
+    }
+
+    Write-Done -Message "$($ICONS[`"install`"]) Chocolaty package installed!"
+
+}
+function Update-Chocolaty {
+    Write-Start -Message "$($ICONS[`"update`"]) Updating Chocolaty ..."
+
+    if (Get-Command choco -ErrorAction Ignore) {
+        Invoke-Command-As-Admin -NameProcess "Updating Chocolaty" -Command "choco upgrade all"
+    }
+    else {
+        Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
+    }
+    Write-Done -Message "$($ICONS[`"update`"]) Chocolaty updated."
 }
 
 function Set-Scoop {
@@ -240,101 +334,11 @@ function Update-Scoop {
     Write-Done -Message "$($ICONS[`"update`"]) Scoop updated."
 }
 
-function Set-Chocolaty {
-    Write-Separate-Line
-
-    Install-Chocolaty
-    Update-Path # Update path for choco command
-    Install-Chocolaty-Packages
-    Update-Chocolaty
-
-    Write-Separate-Line
-}
-function Install-Chocolaty {
-    Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty ..."
-    Invoke-Command-As-Admin -Name "Installing Chocolaty" - Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-    Write-Done -Message "$($ICONS[`"install`"]) Chocolaty installed."
-}
-function Install-Chocolaty-Packages {
-    Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty package ..."
-
-    if (Get-Command choco -ErrorAction Ignore) {
-        Invoke-Command-As-Admin -NameProcess "Chocolaty package" -Command "choco install bat fzf gdu less ripgrep sigcheck winfetch unzip -y"
-    }
-    else {
-        Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
-    }
-
-    Write-Done -Message "$($ICONS[`"install`"]) Chocolaty package installed!"
-
-}
-function Update-Chocolaty {
-    Write-Start -Message "$($ICONS[`"update`"]) Updating Chocolaty ..."
-
-    if (Get-Command choco -ErrorAction Ignore) {
-        Invoke-Command-As-Admin -NameProcess "Updating Chocolaty" -Command "choco upgrade all"
-    }
-    else {
-        Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
-    }
-    Write-Done -Message "$($ICONS[`"update`"]) Chocolaty updated."
-}
-
-function Set-Winget {
-    Write-Separate-Line
-
-    Install-Winget-Packages
-    Update-Winget-Packages
-
-    Write-Separate-Line
-}
-function Install-Winget-Packages {
-    $ID_LIST = @(
-        "IObit.AdvancedSystemCare"
-        "IObit.Uninstaller"
-        "GitHub.GitHubDesktop"
-        "Git.Git"
-        "JRSoftware.InnoSetup"
-        "Tonec.InternetDownloadManager"
-        "Microsoft.PowerToys"
-        "Microsoft.WindowsTerminal"
-        "JanDeDobbeleer.OhMyPosh"
-        "JetBrains.Toolbox"
-        "RARLab.WinRAR"
-        "chrisant996.Clink"
-        "iTop.iTopScreenRecorder"
-        "qBittorrent.qBittorrent"
-        "sharkdp.fd"
-        "gerardog.gsudo"
-        "Starship.Starship"
-        "Clement.bottom"
-        "CodeSector.TeraCopy"
-        "Microsoft.PowerShell"
-        "GitHub.cli"
-        "Microsoft.VisualStudioCode"
-        "Oracle.JavaRuntimeEnvironment"
-        "Oracle.JDK.20"
-        "MSYS2.MSYS2"
-        "Kitware.CMake"
-        "OpenJS.NodeJS.LTS"
-        "Neovim.Neovim"
-    )
-
-    foreach ($id in $id_list) {
-        Update-Path
-        winget install --id $id -s winget -e --accept-package-agreements
-    }
-}
-function Update-Winget-Packages {
-    winget upgrade --all
-}
-
 function Set-Up-Config {
     Set-Git
     Set-Neovim
     Set-Global-Node-Modules
     Set-Python-Modules
-    Set-PowerShell
     Set-Starship
 }
 function Set-Git {
@@ -379,11 +383,11 @@ function Set-PowerShell {
     Invoke-Command-As-Admin -NameProcess "Install z module" -Command "Install-Module -Name z"
 }
 function Set-Starship {
-    if (!Test-Path "$env:USERPROFILE\.config") {
+    if (!(Test-Path "$env:USERPROFILE\.config")) {
         New-Item -ItemType Directory "$env:USERPROFILE\.config" -Force
     }
 
-    if (!Test-Path "$env:LOCALAPPDATA\clink") {
+    if (!(Test-Path "$env:LOCALAPPDATA\clink")) {
         New-Item -ItemType Directory "$env:LOCALAPPDATA\clink" -Force
     }
 
@@ -408,9 +412,11 @@ New-Temp-And-Log
 Start-Transcript -Path "$OUTPUT_PATH\master.log" -Force # Start logging
 Disable-UAC
 
-Set-Scoop
-Set-Chocolaty
+Set-PowerShell
+
 Set-Winget
+Set-Chocolaty
+Set-Scoop
 
 Set-Up-Config
 

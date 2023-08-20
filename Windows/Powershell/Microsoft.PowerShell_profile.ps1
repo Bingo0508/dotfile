@@ -5,17 +5,6 @@ Import-Module z
 
 (@(& 'C:/Users/manht/AppData/Local/Programs/oh-my-posh/bin/oh-my-posh.exe' init pwsh --config='C:\Users\manht\AppData\Local\Programs\oh-my-posh\themes\emodipt-extend.omp.json' --print) -join "`n") | Invoke-Expression
 
-# Import the Chocolatey Profile that contains the necessary code to enable
-# tab-completions to function for `choco`.
-# Be aware that if you are missing these lines from your profile, tab completion
-# for `choco` will not function.
-# See https://ch0.co/tab-completion for details.
-$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile))
-{
-    Import-Module "$ChocolateyProfile"
-}
-
 # Config color for Get-ChildItem
 $PSStyle.FileInfo.Directory = $PSStyle.Underline + $PSStyle.Bold + $PSStyle.Background.Black + $PSStyle.Foreground.Blue
 $PSStyle.FileInfo.Executable = $PSStyle.Bold + $PSStyle.Italic + $PSStyle.Foreground.Red
