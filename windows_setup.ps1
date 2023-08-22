@@ -1,6 +1,3 @@
-oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
-oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
-
 # NOTE: If you can't run the script due to the ExecutionPolicy, please run this command as admin
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 # Or:
@@ -403,6 +400,18 @@ function Set-Starship {
     Copy-Item -Path ".\Windows\starship.lua" -Destination "$env:LOCALAPPDATA\clink" -Force
 }
 
+function Set-Posh-Theme {
+    $powershellCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
+    $pwshCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
+
+    
+    $pwshCommand | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
+    $powershellCommand | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+
+    $pwshCommand | Out-File -Append -FilePath "$env:USERPROFILE\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
+    $powershellCommand | Out-File -Append -FilePath "$env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+}
+
 <# ========== DECLARE ALL NECESSARY DATA HERE ========= #>
 <# ================== END OF DECLARE ================== #>
 
@@ -422,11 +431,12 @@ Disable-UAC
 
 Set-PowerShell
 
-Set-Winget
+# Set-Winget
 Set-Chocolaty
 Set-Scoop
 
 Set-Up-Config
+Set-Posh-Theme
 
 Enable-UAC
 
