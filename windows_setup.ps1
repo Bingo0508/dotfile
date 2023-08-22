@@ -1,9 +1,12 @@
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\jandedobbeleer.omp.json"
+
+
 # NOTE: If you can't run the script due to the ExecutionPolicy, please run this command as admin
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 # Or:
 # Set-ExecutionPolicy -ExecutionPolicy ByPass -Scope CurrentUser -Force
 
-Write-Warning -Message "Please check winget carefully before installing! (Update or Install App Installer in MS Store for winget)"
+Write-Warning -Message "Please check winget carefully before installing!"
 pause
 
 <# ================== BEGIN OF DECLARE ================ #>
@@ -39,20 +42,22 @@ function Invoke-Command-As-Admin {
         [string]$Command
     )
     
-    while (Test-Path -Path "$LOG_PATH\$ProcessName.log") {
+    $ProcessFileName = $ProcessName.Replace(" ", "_")
+    while (Test-Path -Path "$LOG_PATH\$ProcessFileName.log") {
         $id = Get-Random
-        $ProcessName = "$ProcessName-$id"
+        $ProcessFileName = "$ProcesFilesName-$id"
     }
 
-    New-Temp-Script -FileName $ProcessName -CommandList $Command
+    New-Temp-Script -FileName $ProcessFileName -CommandList $Command
 
     Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process requires admin right! Starting admin process ..." 
-    $argument = "-NoLogo -NoProfile -File `"$TEMP_PATH\$ProcessName.ps1`"" 
+
+    $argument = "-NoLogo -NoProfile -File `"$TEMP_PATH\$ProcessFileName.ps1`"" 
     Start-Process -FilePath "powershell.exe" -Verb RunAs -Wait -ArgumentList $argument
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Magenta "The process return an output:"
     Write-Host -ForegroundColor Magenta "-----------------------------"
-    $log = Get-Log -File $ProcessName.Replace(" ", "_")
+    $log = Get-Log -File $ProcesFilesName
     Write-Log -Message $log
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
@@ -99,7 +104,7 @@ function Get-Log {
     param(
         [string]$File
     )
-    
+
     $FileContent = Get-Content "$LOG_PATH\$File.log" -ErrorAction Ignore
     
     Set-Variable SPLIT -Option ReadOnly -Value "**********************"
@@ -168,7 +173,6 @@ function New-Temp-Script {
     }
     $FileContent += "Stop-Transcript"
 
-    $FileName = $FileName.Replace(" ", "_")
     $FileContent | Out-File -FilePath "$TEMP_PATH\$FileName.ps1"
 }
 
@@ -384,7 +388,7 @@ function Set-PowerShell {
     # Remove old default PSReadline
     Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:`$false"
     Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module PSReadLine -Force"
-    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -Force"
+    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -Force -AllowClobber"
 }
 function Set-Starship {
     if (!(Test-Path "$env:USERPROFILE\.config")) {
@@ -418,9 +422,9 @@ Disable-UAC
 
 Set-PowerShell
 
-# Set-Winget
-# Set-Chocolaty
-# Set-Scoop
+Set-Winget
+Set-Chocolaty
+Set-Scoop
 
 Set-Up-Config
 
