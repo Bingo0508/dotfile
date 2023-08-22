@@ -52,7 +52,7 @@ function Invoke-Command-As-Admin {
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Magenta "The process return an output:"
     Write-Host -ForegroundColor Magenta "-----------------------------"
-    $log = Get-Log -File $ProcessName
+    $log = Get-Log -File $ProcessName.Replace(" ", "_")
     Write-Log -Message $log
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
@@ -167,6 +167,7 @@ function New-Temp-Script {
     }
     $FileContent += "Stop-Transcript"
 
+    $FileName = $FileName.Replace(" ", "_")
     $FileContent | Out-File -FilePath "$TEMP_PATH\$FileName.ps1"
 }
 
