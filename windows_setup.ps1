@@ -70,6 +70,7 @@ function Write-Start {
     Write-Separate-Line
     Write-Host -ForegroundColor Blue "$($ICONS[`"start`"]) $Message"
 }
+
 function Write-Done {
     [CmdletBinding()]
     param(
@@ -367,25 +368,23 @@ function Set-Python-Modules {
     python -m pip install -U pynvim
 }
 function Set-PowerShell {
-    if (Test-Path "$env:USERPROFILE\OneDrive") {
-        # Profile for default PowerShell
-        Copy-Item -Path ".\Windows\WindowsPowerShell" -Destination "$env:USERPROFILE\OneDrive\Documents" -Recurse -Force
+
+    # Profile for default PowerShell (OneDrive)
+    Copy-Item -Path ".\Windows\WindowsPowerShell" -Destination "$env:USERPROFILE\OneDrive\Documents" -Recurse -Force
         
-        # Profile for PowerShell v7
-        Copy-Item -Path ".\Windows\Powershell" -Destination "$env:USERPROFILE\OneDrive\Documents" -Recurse -Force
-    }
-    else {
-        # Profile for default PowerShell
-        Copy-Item -Path ".\Windows\WindowsPowerShell" -Destination "$env:USERPROFILE\Documents" -Recurse -Force
-        
-        # Profile for PowerShell v7
-        Copy-Item -Path ".\Windows\Powershell" -Destination "$env:USERPROFILE\Documents" -Recurse -Force
-    }
+    # Profile for PowerShell v7 (OneDrive)
+    Copy-Item -Path ".\Windows\Powershell" -Destination "$env:USERPROFILE\OneDrive\Documents" -Recurse -Force
+
+    # Profile for default PowerShell
+    Copy-Item -Path ".\Windows\WindowsPowerShell" -Destination "$env:USERPROFILE\Documents" -Recurse -Force
+    
+    # Profile for PowerShell v7
+    Copy-Item -Path ".\Windows\Powershell" -Destination "$env:USERPROFILE\Documents" -Recurse -Force
 
     # Remove old default PSReadline
     Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:`$false"
     Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module PSReadLine -Force"
-    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -AlowClobber -Force"
+    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -Force"
 }
 function Set-Starship {
     if (!(Test-Path "$env:USERPROFILE\.config")) {
