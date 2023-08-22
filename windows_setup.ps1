@@ -1,5 +1,5 @@
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\jandedobbeleer.omp.json"
-
+oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
+oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
 
 # NOTE: If you can't run the script due to the ExecutionPolicy, please run this command as admin
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
