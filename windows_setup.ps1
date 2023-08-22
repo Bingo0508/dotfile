@@ -32,6 +32,32 @@ $LOG_PATH = "$OUTPUT_PATH\log"
 $TEMP_PATH = "$OUTPUT_PATH\temp"
 $IS_RUNNING_AS_ADMIN = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
+function Invoke-Command-As-Admin {
+    [CmdletBinding()]
+    param(
+        [string]$ProcessName = "",
+        [string]$Command
+    )
+    
+    while (Test-Path -Path "$LOG_PATH\$ProcessName.log") {
+        $id = Get-Random
+        $ProcessName = "$ProcessName-$id"
+    }
+
+    New-Temp-Script -FileName $ProcessName -CommandList $Command
+
+    Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process requires admin right! Starting admin process ..." 
+    $argument = "-NoLogo -NoProfile -File `"$TEMP_PATH\$ProcessName.ps1`"" 
+    Start-Process -FilePath "powershell.exe" -Verb RunAs -Wait -ArgumentList $argument
+    Write-Host -ForegroundColor Magenta "-----------------------------"
+    Write-Host -ForegroundColor Magenta "The process return an output:"
+    Write-Host -ForegroundColor Magenta "-----------------------------"
+    $log = Get-Log -File $ProcessName
+    Write-Log -Message $log
+    Write-Host -ForegroundColor Magenta "-----------------------------"
+    Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
+}
+
 function Write-Separate-Line {
     Write-Host -ForegroundColor Magenta $SEPARATE_LINE
 }
@@ -143,31 +169,6 @@ function New-Temp-Script {
 
     $FileContent | Out-File -FilePath "$TEMP_PATH\$FileName.ps1"
 }
-function Invoke-Command-As-Admin {
-    [CmdletBinding()]
-    param(
-        [string]$ProcessName = "",
-        [string]$Command
-    )
-    
-    while (Test-Path -Path "$LOG_PATH\$ProcessName.log") {
-        $id = Get-Random
-        $ProcessName = "$ProcessName-$id"
-    }
-
-    New-Temp-Script -FileName $ProcessName -CommandList $Command
-
-    Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process requires admin right! Starting admin process ..." 
-    $argument = "-NoLogo -NoProfile -File `"$TEMP_PATH\$ProcessName.ps1`"" 
-    Start-Process -FilePath "powershell.exe" -Verb RunAs -Wait -ArgumentList $argument
-    Write-Host -ForegroundColor Magenta "-----------------------------"
-    Write-Host -ForegroundColor Magenta "The process return an output:"
-    Write-Host -ForegroundColor Magenta "-----------------------------"
-    $log = Get-Log -File $ProcessName
-    Write-Log -Message $log
-    Write-Host -ForegroundColor Magenta "-----------------------------"
-    Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
-}
 
 function Update-Path {
     Write-Start "$($ICONS[`"update`"]) Refreshing path variable."
@@ -184,7 +185,7 @@ function Enable-UAC {
 
     Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning on UAC"
     $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DEFAULT_UAC_VALUE"
-    Invoke-Command-As-Admin -NameProcess "Enable UAC" -Command $Command
+    Invoke-Command-As-Admin -ProcessName "Enable UAC" -Command $Command
     Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turned on UAC"
 }
 function Disable-UAC {
@@ -194,7 +195,7 @@ function Disable-UAC {
 
     Write-Start -Message "$($ICONS[`"setting`"]) $($ICONS[`"on`"]) Turning off UAC"
     $Command = "Set-ItemProperty -Path $UAC_PATH -Name $NAME_UAC -Value $DISABLE_UAC_VALUE"
-    Invoke-Command-As-Admin -NameProcess "Disable UAC" -Command $Command
+    Invoke-Command-As-Admin -ProcessName "Disable UAC" -Command $Command
     Write-Done -Message "$($ICONS[`"setting`"]) $($ICONS[`"off`"]) Turned off UAC"
 }
 
@@ -259,14 +260,14 @@ function Set-Chocolaty {
 }
 function Install-Chocolaty {
     Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty ..."
-    Invoke-Command-As-Admin -Name "Installing Chocolaty" - Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+    Invoke-Command-As-Admin -ProcessName "Installing Chocolaty" -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
     Write-Done -Message "$($ICONS[`"install`"]) Chocolaty installed."
 }
 function Install-Chocolaty-Packages {
     Write-Start -Message "$($ICONS[`"install`"]) Installing Chocolaty package ..."
 
     if (Get-Command choco -ErrorAction Ignore) {
-        Invoke-Command-As-Admin -NameProcess "Chocolaty package" -Command "choco install bat fzf gdu less ripgrep sigcheck winfetch unzip -y"
+        Invoke-Command-As-Admin -ProcessName "Chocolaty package" -Command "choco install bat fzf gdu less ripgrep sigcheck winfetch unzip -y"
     }
     else {
         Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
@@ -279,7 +280,7 @@ function Update-Chocolaty {
     Write-Start -Message "$($ICONS[`"update`"]) Updating Chocolaty ..."
 
     if (Get-Command choco -ErrorAction Ignore) {
-        Invoke-Command-As-Admin -NameProcess "Updating Chocolaty" -Command "choco upgrade all"
+        Invoke-Command-As-Admin -ProcessName "Updating Chocolaty" -Command "choco upgrade all"
     }
     else {
         Write-Error -Message "$($ICONS[`"error`"]) Chocolaty isn't installed! Abort ..."
@@ -325,6 +326,9 @@ function Update-Scoop {
     Write-Start -Message "$($ICONS[`"update`"]) Updating Scoop ..."
     
     if (Get-Command scoop -ErrorAction Ignore) {
+        if (Get-Command git -ErrorAction Ignore) {
+            scoop install git
+        }
         scoop update
     }
     else {
@@ -378,9 +382,9 @@ function Set-PowerShell {
     }
 
     # Remove old default PSReadline
-    Invoke-Command-As-Admin -NameProcess "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:$false"
-    Invoke-Command-As-Admin -NameProcess "Install PSReadline module" -Command "Install-Module -Name PSReadLine -AllowPrerelease"
-    Invoke-Command-As-Admin -NameProcess "Install z module" -Command "Install-Module -Name z"
+    Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:$false"
+    Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module -Name PSReadLine -AllowPrerelease"
+    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module -Name z"
 }
 function Set-Starship {
     if (!(Test-Path "$env:USERPROFILE\.config")) {
