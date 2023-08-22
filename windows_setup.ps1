@@ -3,7 +3,7 @@
 # Or:
 # Set-ExecutionPolicy -ExecutionPolicy ByPass -Scope CurrentUser -Force
 
-Write-Warning -Message "Please check winget carefully before installing!"
+Write-Warning -Message "Please check winget carefully before installing! (Update or Install App Installer in MS Store for winget)"
 pause
 
 <# ================== BEGIN OF DECLARE ================ #>
