@@ -54,7 +54,7 @@ function Invoke-Command-As-Admin {
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Magenta "The process return an output:"
     Write-Host -ForegroundColor Magenta "-----------------------------"
-    $log = Get-Log -File $ProcesFilesName
+    $log = Get-Log -File $ProcessFileName
     Write-Log -Message $log
     Write-Host -ForegroundColor Magenta "-----------------------------"
     Write-Host -ForegroundColor Red "$($ICONS[`"process`"]) The `"$ProcessName`" process done."
@@ -101,7 +101,7 @@ function Get-Log {
     param(
         [string]$File
     )
-
+    Write-Host "| $File |"
     $FileContent = Get-Content "$LOG_PATH\$File.log" -ErrorAction Ignore
     
     Set-Variable SPLIT -Option ReadOnly -Value "**********************"
@@ -369,6 +369,7 @@ function Set-Python-Modules {
     python -m pip install -U pynvim
 }
 function Set-PowerShell {
+    New-Item -ItemType Directory -Path "$env:USERPROFILE\OneDrive\Documents" -Force
 
     # Profile for default PowerShell (OneDrive)
     Copy-Item -Path ".\Windows\WindowsPowerShell" -Destination "$env:USERPROFILE\OneDrive\Documents" -Recurse -Force
@@ -405,11 +406,11 @@ function Set-Posh-Theme {
     $pwshCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
 
     
-    $pwshCommand | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
-    $powershellCommand | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    "`n$pwshCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
+    "`n$powershellCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 
-    $pwshCommand | Out-File -Append -FilePath "$env:USERPROFILE\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
-    $powershellCommand | Out-File -Append -FilePath "$env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    "`n$pwshCommand" | Out-File -Append -FilePath "$env:USERPROFILE\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
+    "`n$powershellCommand" | Out-File -Append -FilePath "$env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 }
 
 <# ========== DECLARE ALL NECESSARY DATA HERE ========= #>
