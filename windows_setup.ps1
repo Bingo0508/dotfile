@@ -382,9 +382,9 @@ function Set-PowerShell {
     }
 
     # Remove old default PSReadline
-    Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:$false"
-    Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module -Name PSReadLine -AllowPrerelease"
-    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module -Name z"
+    Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:`$false"
+    Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module PSReadLine -Force"
+    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -AlowClobber -Force"
 }
 function Set-Starship {
     if (!(Test-Path "$env:USERPROFILE\.config")) {
@@ -418,9 +418,9 @@ Disable-UAC
 
 Set-PowerShell
 
-Set-Winget
-Set-Chocolaty
-Set-Scoop
+# Set-Winget
+# Set-Chocolaty
+# Set-Scoop
 
 Set-Up-Config
 
