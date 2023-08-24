@@ -432,7 +432,7 @@ Disable-UAC
 
 Set-PowerShell
 
-# Set-Winget
+Set-Winget
 Set-Chocolaty
 Set-Scoop
 
