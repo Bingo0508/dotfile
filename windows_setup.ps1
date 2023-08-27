@@ -317,7 +317,7 @@ function Install-Scoop-Packages {
     Write-Start -Message "$($ICONS[`"install`"]) Installing scoop package ..."
     
     if (Get-Command scoop -ErrorAction Ignore) {
-        scoop install 7zip curl lazygit which wget
+        scoop install 7zip curl lazygit which wget zoxide
     }
     else {
         Write-Error -Message "$($ICONS[`"error`"]) ERROR: Scoop isn't installed! Aborting ..."
@@ -386,7 +386,6 @@ function Set-PowerShell {
     # Remove old default PSReadline
     Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:`$false"
     Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module PSReadLine -Force"
-    Invoke-Command-As-Admin -ProcessName "Install z module" -Command "Install-Module z -Force -AllowClobber"
 }
 function Set-Starship {
     if (!(Test-Path "$env:USERPROFILE\.config")) {
