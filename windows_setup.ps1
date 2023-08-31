@@ -240,6 +240,7 @@ function Install-Winget-Packages {
         "Kitware.CMake"
         "OpenJS.NodeJS.LTS"
         "Neovim.Neovim"
+        "zoxide"
     )
 
     foreach ($id in $id_list) {
@@ -317,7 +318,7 @@ function Install-Scoop-Packages {
     Write-Start -Message "$($ICONS[`"install`"]) Installing scoop package ..."
     
     if (Get-Command scoop -ErrorAction Ignore) {
-        scoop install 7zip curl lazygit which wget zoxide
+        scoop install 7zip curl lazygit which wget
     }
     else {
         Write-Error -Message "$($ICONS[`"error`"]) ERROR: Scoop isn't installed! Aborting ..."
