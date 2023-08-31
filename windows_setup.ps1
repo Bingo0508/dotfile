@@ -2,6 +2,9 @@
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 # Or:
 # Set-ExecutionPolicy -ExecutionPolicy ByPass -Scope CurrentUser -Force
+# TODO Must install Java, Rust, Python (pynvim package), Visual Studio 2022, Qt, Office, Adobe Acrobat,
+# Google Driver, esclipse, kaspersky, gramarly, adguard, nodejs, nerd font.
+# UnikeyNT can be replaced by EVKey
 
 Write-Warning -Message "Please check winget carefully before installing!"
 pause
@@ -224,7 +227,6 @@ function Install-Winget-Packages {
         "JetBrains.Toolbox"
         "RARLab.WinRAR"
         "chrisant996.Clink"
-        "iTop.iTopScreenRecorder"
         "qBittorrent.qBittorrent"
         "sharkdp.fd"
         "gerardog.gsudo"
@@ -234,13 +236,13 @@ function Install-Winget-Packages {
         "Microsoft.PowerShell"
         "GitHub.cli"
         "Microsoft.VisualStudioCode"
-        "Oracle.JavaRuntimeEnvironment"
-        "Oracle.JDK.20"
         "MSYS2.MSYS2"
         "Kitware.CMake"
         "OpenJS.NodeJS.LTS"
         "Neovim.Neovim"
         "zoxide"
+        "OBSProject.OBSStudio"
+        "Unikey.Unikey"
     )
 
     foreach ($id in $id_list) {
