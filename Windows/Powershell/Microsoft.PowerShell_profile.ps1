@@ -1,7 +1,6 @@
 Import-Module "~\OneDrive\Documents\WindowsPowerShell\alias.ps1"
 Import-Module PSReadLine 
 Set-PSReadLineOption -PredictionSource History
-Import-Module z
 
 # Config color for Get-ChildItem
 $PSStyle.FileInfo.Directory = $PSStyle.Underline + $PSStyle.Bold + $PSStyle.Background.Black + $PSStyle.Foreground.Blue
