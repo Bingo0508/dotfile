@@ -3,7 +3,7 @@
 # Or:
 # Set-ExecutionPolicy -ExecutionPolicy ByPass -Scope CurrentUser -Force
 # TODO Must install Java, Rust, Python (pynvim package), Visual Studio 2022, Qt, Office, Adobe Acrobat,
-# Google Driver, esclipse, kaspersky, gramarly, adguard, nodejs, nerd font.
+# Google Driver, esclipse, kaspersky, gramarly, adguard, nerd font.
 # UnikeyNT can be replaced by EVKey
 
 Write-Warning -Message "Please check winget carefully before installing!"
@@ -208,8 +208,11 @@ function Disable-UAC {
 function Set-Winget {
     Write-Separate-Line
 
+    Update-Path
     Install-Winget-Packages
+    Update-Path
     Update-Winget-Packages
+    Update-Path
 
     Write-Separate-Line
 }
@@ -260,7 +263,9 @@ function Set-Chocolaty {
     Install-Chocolaty
     Update-Path # Update path for choco command
     Install-Chocolaty-Packages
+    Update-Path
     Update-Chocolaty
+    Update-Path
 
     Write-Separate-Line
 }
@@ -297,10 +302,15 @@ function Update-Chocolaty {
 function Set-Scoop {
     Write-Separate-Line
 
+    Update-Path
     Install-Scoop
+    Update-Path
     Update-Scoop
+    Update-Path
     Install-Scoop-Packages
+    Update-Path
     Update-Scoop
+    Update-Path
 
     Write-Separate-Line
 }
@@ -320,6 +330,7 @@ function Install-Scoop-Packages {
     Write-Start -Message "$($ICONS[`"install`"]) Installing scoop package ..."
     
     if (Get-Command scoop -ErrorAction Ignore) {
+        scoop bucket add extras
         scoop install 7zip curl lazygit which wget
     }
     else {
@@ -332,9 +343,6 @@ function Update-Scoop {
     Write-Start -Message "$($ICONS[`"update`"]) Updating Scoop ..."
     
     if (Get-Command scoop -ErrorAction Ignore) {
-        if (Get-Command git -ErrorAction Ignore) {
-            scoop install git
-        }
         scoop update
     }
     else {
@@ -348,7 +356,6 @@ function Set-Up-Config {
     Set-Git
     Set-Neovim
     Set-Global-Node-Modules
-    Set-Python-Modules
     Set-Starship
 }
 function Set-Git {
@@ -367,9 +374,6 @@ function Set-Neovim {
 }
 function Set-Global-Node-Modules {
     npm install -g neovim
-}
-function Set-Python-Modules {
-    python -m pip install -U pynvim
 }
 function Set-PowerShell {
     New-Item -ItemType Directory -Path "$env:USERPROFILE\OneDrive\Documents" -Force
@@ -404,6 +408,9 @@ function Set-Starship {
 }
 
 function Set-Posh-Theme {
+    oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
+    oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
+
     $powershellCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
     $pwshCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
 
