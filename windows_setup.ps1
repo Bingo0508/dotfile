@@ -407,8 +407,8 @@ function Set-Starship {
 }
 
 function Set-Posh-Theme {
-    $powershellCommand = (@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init powershell --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\1_shell.omp.json' --print) -join "`n") | Invoke-Expression
-    $pwshCommand = (@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init pwsh --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\emodipt-extend.omp.json' --print) -join "`n") | Invoke-Expression
+    $powershellCommand = "(@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init powershell --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\1_shell.omp.json' --print) -join `"``n`") | Invoke-Expression"
+    $pwshCommand = "(@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init pwsh --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\emodipt-extend.omp.json' --print) -join `"``n`") | Invoke-Expression"
 
     "`n$pwshCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
     "`n$powershellCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
