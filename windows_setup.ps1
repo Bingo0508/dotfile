@@ -391,7 +391,6 @@ function Set-PowerShell {
     Copy-Item -Path ".\Windows\Powershell" -Destination "$env:USERPROFILE\Documents" -Recurse -Force
 
     # Remove old default PSReadline
-    Invoke-Command-As-Admin -ProcessName "Remove old PSReadline" -Command "Remove-Item -Path 'C:\Program Files\WindowsPowerShell\Modules\PSReadLine' -Force -Recurse -Confirm:`$false"
     Invoke-Command-As-Admin -ProcessName "Install PSReadline module" -Command "Install-Module PSReadLine -Force"
 }
 function Set-Starship {
@@ -408,13 +407,9 @@ function Set-Starship {
 }
 
 function Set-Posh-Theme {
-    oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
-    oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
+    $powershellCommand = (@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init powershell --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\1_shell.omp.json' --print) -join "`n") | Invoke-Expression
+    $pwshCommand = (@(& '$env:LOCALAPPDATA/Programs/oh-my-posh/bin/oh-my-posh.exe' init pwsh --config='$env:LOCALAPPDATA\Programs\oh-my-posh\themes\emodipt-extend.omp.json' --print) -join "`n") | Invoke-Expression
 
-    $powershellCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\1_shell.omp.json"
-    $pwshCommand = oh-my-posh init powershell --config "$env:POSH_THEMES_PATH\emodipt-extend.omp.json"
-
-    
     "`n$pwshCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\Powershell\Microsoft.PowerShell_profile.ps1"
     "`n$powershellCommand" | Out-File -Append -FilePath "$env:USERPROFILE\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 
