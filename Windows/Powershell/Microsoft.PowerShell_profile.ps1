@@ -27,3 +27,4 @@ Set-PSReadLineOption -Colors @{
     Type = $PSStyle.Foreground.BrightGreen
     Variable =  $PSStyle.bold + $PSStyle.Italic + $PSStyle.Underline + $PSStyle.Foreground.Green
 }
+Invoke-Expression (& { (zoxide init powershell | Out-String) })
