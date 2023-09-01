@@ -243,7 +243,7 @@ function Install-Winget-Packages {
         "Kitware.CMake"
         "OpenJS.NodeJS.LTS"
         "Neovim.Neovim"
-        "zoxide"
+        "ajeetdsouza.zoxide"
         "OBSProject.OBSStudio"
         "Unikey.Unikey"
     )
